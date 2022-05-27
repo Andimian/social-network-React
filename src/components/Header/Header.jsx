@@ -1,11 +1,14 @@
 import h from './Header.module.css';
-import Navbar from "../Navbar/Navbar";
+import {NavLink} from "react-router-dom";
+import logo from "../../assets/images/logo.png";
 
-const Header = () => {
+const Header = (props) => {
     return (
         <header className={h.header}>
-            <div className="container">
-                <img src="../src/img/fenix.png" alt=""/>
+            <div className={h.logo}><img src={logo} alt=""/></div>
+            <div className={h.loginBlock}>
+                {props.isAuth ? props.login :
+                <NavLink to={'/login'}>Login</NavLink> }
             </div>
         </header>
     )
