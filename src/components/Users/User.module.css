@@ -1,0 +1,18 @@
+.userPhoto {
+    width: 140px;
+    height: auto;
+}
+.selectedPage {
+    font-weight: bold;
+}
+.user {
+    display: flex;
+}
+.name {
+    color: #262626;
+    font-size: 25px;
+}
+.unic {
+    color: navy;
+    text-decoration: #ADADAD;
+}

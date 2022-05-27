@@ -1,0 +1,13 @@
+.header {
+    grid-area: h;
+    background: #262626;
+    color: #ADADAD;
+}
+.header img {
+    width: 40px;
+}
+.list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 400px));
+    grid-template-rows: 40px;
+}
