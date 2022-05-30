@@ -12,8 +12,8 @@ const authReducer = (state = initialState, action) => {
         case SET_USER_DATA: {
             return  {
                 ...state,
-                ...action.data,
-                isAuth: false
+                ...action.data, //создаём объект в экшене и деструктуризируем его, туда положим userId, email, login. Тут вот выше ...state и дальше ..action - это мы склеиваем из двух объектов один. Так как data идёт после state, то userId, email, login из data перезатрут эти же свойства из state
+                isAuth: true
             };
         }
         default:

@@ -4,27 +4,27 @@ import {
     follow,
     setCurrentPage,
     setTotalUserCount,
-    setUsers,
+    setUsers, toggleFollowingProgress,
     toggleIsFetching,
     unFollow
 } from "../../redux/users-reduser";
-import * as axios from "axios";
 import Users from "./Users";
 import Preloader from "../common/Preloader/Preloader";
+import {getUsers} from "../../api/api";
 
 
 class UsersContainer extends React.Component {
     componentDidMount() {
         /*когда пошёл запрос - мы запускаем прелоудер*/
         this.props.toggleIsFetching(true);
-
-        axios.get(`https://social-network.samuraijs.com/api/1.0/users?page=${this.props.currentPage}&count=${this.props.pageSize}`)
+        getUsers(this.props.currentPage, this.props.pageSize)
             .then(response => {
                 /*когда приходит ответ - отрубаем прелоудер*/
                 this.props.toggleIsFetching(false);
-
-                this.props.setUsers(response.data.items);
-                this.props.setTotalUserCount(response.data.totalCount);
+                // this.props.setUsers(response.data.items);
+                this.props.setUsers(response.items);
+                // this.props.setTotalUserCount(response.data.totalCount);
+                this.props.setTotalUserCount(response.totalCount);
             })
     }
 
@@ -32,18 +32,19 @@ class UsersContainer extends React.Component {
     onPageChanged = (pageNumber) => {
         this.props.setCurrentPage(pageNumber);
         this.props.toggleIsFetching(true);
-
-        axios.get(`https://social-network.samuraijs.com/api/1.0/users?page=${pageNumber}&count=${this.props.pageSize}`)
+        // Эти запрос мы должны слать авторизованно, ЛИБО ОН ПОЙДЁТ КАК ОТ АНОНИМА и сервачелла вернёт нам что мы ни на кого не подписаны (к примеру) => надо добавить объект настройки
+        getUsers(pageNumber, this.props.pageSize)
             .then(response => {
                 this.props.toggleIsFetching(false);
-                this.props.setUsers(response.data.items);
+                // this.props.setUsers(response.data.items);
+                this.props.setUsers(response.items);
             })
-    }
+
+    };
 
     render() {
         return <>
             {this.props.isFetching ? <Preloader/> : null}
-
             <Users
                 totalUserCount={this.props.totalUserCount}
                 pageSize={this.props.pageSize}
@@ -52,6 +53,8 @@ class UsersContainer extends React.Component {
                 onPageChanged={this.onPageChanged}
                 unFollow={this.props.unFollow}
                 follow={this.props.follow}
+                toggleFollowingProgress={this.props.toggleFollowingProgress}
+                followingInProgress={this.props.followingInProgress}
             />;
         </>
     }
@@ -65,16 +68,19 @@ let mapStateToProps = (state) => {
         pageSize: state.usersPage.pageSize,
         totalUserCount: state.usersPage.totalUserCount,
         currentPage: state.usersPage.currentPage,
-        isFetching: state.usersPage.isFetching
+        isFetching: state.usersPage.isFetching,
+        followingInProgress: state.usersPage.followingInProgress,
     }
 };
 
+
 export default connect(mapStateToProps, {
-        follow,
+        follow,/*коннект короче атвоматически создаёт колбек функцию, в которой он вызывает action creator follow, action creator возвращает action и потом этот экшен диспатчится*/
         unFollow,
         setUsers,
         setCurrentPage,
         setTotalUserCount,
-        toggleIsFetching
+        toggleIsFetching,
+        toggleFollowingProgress,
     }
 )(UsersContainer);
