@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {
-    follow,
+    follow, getUsersThunkCreator,
     setCurrentPage,
     setTotalUserCount,
     setUsers, toggleFollowingProgress,
@@ -15,17 +15,15 @@ import {getUsers} from "../../api/api";
 
 class UsersContainer extends React.Component {
     componentDidMount() {
-        /*когда пошёл запрос - мы запускаем прелоудер*/
-        this.props.toggleIsFetching(true);
-        getUsers(this.props.currentPage, this.props.pageSize)
-            .then(response => {
-                /*когда приходит ответ - отрубаем прелоудер*/
-                this.props.toggleIsFetching(false);
-                // this.props.setUsers(response.data.items);
-                this.props.setUsers(response.items);
-                // this.props.setTotalUserCount(response.data.totalCount);
-                this.props.setTotalUserCount(response.totalCount);
-            })
+
+        this.props.getUsersThunkCreator();
+        // this.props.toggleIsFetching(true);  /*когда пошёл запрос - мы запускаем прелоудер*/
+        // getUsers(this.props.currentPage, this.props.pageSize)
+        //     .then(response => {
+        //         this.props.toggleIsFetching(false); /*когда приходит ответ - отрубаем прелоудер*/
+        //         this.props.setUsers(response.items);
+        //         this.props.setTotalUserCount(response.totalCount);
+        //     })
     }
 
     /*пишем метод как стрелоч функцию, чтобы сохранить контекст вызова*/
@@ -55,7 +53,7 @@ class UsersContainer extends React.Component {
                 follow={this.props.follow}
                 toggleFollowingProgress={this.props.toggleFollowingProgress}
                 followingInProgress={this.props.followingInProgress}
-            />;
+            />
         </>
     }
 }
@@ -82,5 +80,6 @@ export default connect(mapStateToProps, {
         setTotalUserCount,
         toggleIsFetching,
         toggleFollowingProgress,
+        getUsersThunkCreator
     }
 )(UsersContainer);

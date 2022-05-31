@@ -1,4 +1,6 @@
 /* Это просто чтобы не обэтоваться с названиями в Action creators */
+import {getUsers} from "../api/api";
+
 const FOLLOW = 'FOLLOW';
 const UNFOLLOW = 'UNFOLLOW';
 const SET_USERS = 'SET_USERS';
@@ -11,12 +13,15 @@ const TOGGLE_IS_FOLLOWING_PROGRESS = 'TOGGLE_IS_FOLLOWING_PROGRESS';
 Инициализационный объект для начального отображения (пока не сделан запрос на сервачеллу)
 */
 let initialState =  {
+    /*пример массива users
+    0: {name: 'Ishatr21', id: 24257, uniqueUrlName: null, photos: {…}, status: null, …}
+    1: {name: 'Mihals', id: 24256, uniqueUrlName: null, photos: {…}, status: 'string', …}*/
     users: [],
     pageSize: 5,    //по сколько чел выводить на 1 странице
     totalUserCount: 0, //сколько всего юзеров
     currentPage: 1,  //активная страничка
     isFetching: false,
-    followingInProgress: [2.3]
+    followingInProgress: []
 };
 
 /*
@@ -59,11 +64,12 @@ const usersReducer = (state = initialState, action) => {
             return  {...state, isFetching: action.isFetching};
         }
         case TOGGLE_IS_FOLLOWING_PROGRESS: {
-            return  {...state,
+            return {
+                ...state,
                 followingInProgress: action.isFetching
                     ? [...state.followingInProgress, action.userId]
                     : [...state.followingInProgress.filter(id => id != action.userId)]
-                };
+            };
         }
         default:
             return state;
@@ -79,6 +85,17 @@ export const setTotalUserCount = (totalUserCount) => ({type: SET_TOTAL_USER_COUN
 export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching: isFetching});
 export const toggleFollowingProgress = (isFetching, userId) => ({type: TOGGLE_IS_FOLLOWING_PROGRESS, isFetching, userId});
 /*.......................................   Action creators end ............................................*/
+
+export const getUsersThunkCreator = (currentPage, pageSize) => {
+    return (dispatch) => {
+        dispatch(toggleIsFetching(true));  /*когда пошёл запрос - мы запускаем прелоудер*/
+        getUsers(currentPage, pageSize)
+        .then(response => {
+            dispatch(toggleIsFetching(false)); /*когда приходит ответ - отрубаем прелоудер*/
+            dispatch(setUsers(response.items));
+            dispatch(setTotalUserCount(response.totalCount));
+        })
+}}
 
 // сам редьюсер (usersReducer) мы импортируем в нашем redux-store и в контейнерный комп-т надо импортировать крейтеры - соответственно делаем экспорт
 export default usersReducer;
