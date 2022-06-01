@@ -1,7 +1,23 @@
 import * as axios from "axios";
 
-export const getUsers = (currentPage = 1, pageSize = 5) => {
-    return axios.get(`https://social-network.samuraijs.com/api/1.0/users?page=${currentPage}&count=${pageSize}`, {withCredentials: true} // Объект настройки
-    )
-        .then(response => {return response.data;})
+const instance = axios.create({
+    withCredentials: true,
+    headers: {"API-KEY": '5eeada43-9109-4af8-bf29-68976dcce322'},
+    baseURL: `https://social-network.samuraijs.com/api/1.0/`
+
+});
+
+export const usersAPI = {
+    getUsers(currentPage = 1, pageSize = 5) {
+        return instance.get(`users?page=${currentPage}&count=${pageSize}`)
+            .then(response => {
+                return response.data;
+            });
+    },
+    folow(id) {
+        return instance.post(`follow/${id}`)
+    },
+    unFolow(id) {
+        return instance.delete(`follow/${id}`)
+    }
 }

@@ -1,5 +1,5 @@
 /* Это просто чтобы не обэтоваться с названиями в Action creators */
-import {getUsers} from "../api/api";
+import {usersAPI} from "../api/api";
 
 const FOLLOW = 'FOLLOW';
 const UNFOLLOW = 'UNFOLLOW';
@@ -77,8 +77,8 @@ const usersReducer = (state = initialState, action) => {
 };
 /*.......................................   Action creators ................................................*/
 /*Если у тебя в объекте свойство называется так же как значнеие переменной - можно сокращать типо ({type: SET_CURRENT_PAGE, currentPage:currentPage}); можно записать ({type: SET_CURRENT_PAGE, currentPage});*/
-export const follow = (userId) => ({type: FOLLOW, userId});
-export const unFollow = (userId) => ({type: UNFOLLOW, userId});
+export const followSuccess = (userId) => ({type: FOLLOW, userId});
+export const unfollowSuccess = (userId) => ({type: UNFOLLOW, userId});
 export const setUsers = (users) => ({type: SET_USERS, users});
 export const setCurrentPage = (currentPage) => ({type: SET_CURRENT_PAGE, currentPage});
 export const setTotalUserCount = (totalUserCount) => ({type: SET_TOTAL_USER_COUNT, count: totalUserCount});
@@ -86,16 +86,43 @@ export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFe
 export const toggleFollowingProgress = (isFetching, userId) => ({type: TOGGLE_IS_FOLLOWING_PROGRESS, isFetching, userId});
 /*.......................................   Action creators end ............................................*/
 
-export const getUsersThunkCreator = (currentPage, pageSize) => {
+/*   Санки   */
+export const getUsersThunk = (currentPage, pageSize) => {
     return (dispatch) => {
         dispatch(toggleIsFetching(true));  /*когда пошёл запрос - мы запускаем прелоудер*/
-        getUsers(currentPage, pageSize)
+        usersAPI.getUsers(currentPage, pageSize)
         .then(response => {
             dispatch(toggleIsFetching(false)); /*когда приходит ответ - отрубаем прелоудер*/
             dispatch(setUsers(response.items));
             dispatch(setTotalUserCount(response.totalCount));
         })
-}}
+}};
+export const follow = (userId) => {
+    return (dispatch) => {
+        dispatch.toggleFollowingProgress(true, userId);
+        usersAPI.folow(userId)
+            .then(response => {
+                if (response.data.resultCode === 0) {
+                    dispatch(followSuccess(userId));
+                }
+                dispatch(toggleFollowingProgress(false, userId));
+            });
+    }
+};
+export const unfollow = (userId) => {
+    return (dispatch) => {
+        dispatch.toggleFollowingProgress(true, userId);
+        usersAPI.unFolow(userId)
+            .then(response => {
+                if (response.data.resultCode === 0) {
+                    dispatch(followSuccess(userId));
+                }
+                dispatch(toggleFollowingProgress(false, userId));
+            });
+    }
+};
+
+
 
 // сам редьюсер (usersReducer) мы импортируем в нашем redux-store и в контейнерный комп-т надо импортировать крейтеры - соответственно делаем экспорт
 export default usersReducer;
