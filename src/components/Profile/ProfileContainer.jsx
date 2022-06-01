@@ -7,23 +7,24 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 
 class ProfileContainer extends React.Component {
+
     componentDidMount() {
         let userId = this.props.router.params.userId ;
         if (!userId){
             userId=2;
         }
-        axios.get(`https://social-network.samuraijs.com/api/1.0/profile/${userId}`)
-            .then(response => {
-                /*когда приходит ответ - отрубаем прелоудер*/
-                this.props.setUserProfile(response.data);
-            })
+        usersAPI.getProfile(userId).then(response => {
+            this.props.setUserProfile(response.data);
+        })
     };
+
     render() {
         return (
                 <Profile {...this.props} profile={this.props.profile}/>
         )
     }
 };
+
 
 /* когда наша функция возвращает объект -ставим круглые скобки */
 let mapStateToProps = (state) => ({
