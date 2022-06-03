@@ -87,7 +87,7 @@ export const toggleFollowingProgress = (isFetching, userId) => ({type: TOGGLE_IS
 /*.......................................   Action creators end ............................................*/
 
 /*   Санки   */
-export const getUsersThunk = (currentPage, pageSize) => {
+export const getUsers = (currentPage, pageSize) => {
     return (dispatch) => {
         dispatch(toggleIsFetching(true));  /*когда пошёл запрос - мы запускаем прелоудер*/
         usersAPI.getUsers(currentPage, pageSize)
