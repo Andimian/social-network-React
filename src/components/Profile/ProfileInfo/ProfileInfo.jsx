@@ -1,8 +1,9 @@
 import s from './ProfileInfo.module.css';
-import userImg from '../../../assets/images/user.jpg';
 import Preloader from "../../common/Preloader/Preloader";
 import React from "react";
-import citiImg from "../../../assets/images/night-city.jpg";
+import cityImg from "../../../assets/images/night-city.jpg";
+import ProfileStatus from "./ProfileStatus";
+
 
 const ProfileInfo = (props) => {
     if (!props.profile) {
@@ -11,9 +12,10 @@ const ProfileInfo = (props) => {
     return (
         <div>
             <div className={s.wellpaper}>
-                <img src={citiImg} alt=""/>
+                <img src={cityImg} alt=""/>
             </div><div className={s.user}>
                 <img src={props.profile.photos.small} alt=""/>
+                <ProfileStatus status={"Hello my friend"}/>
             </div>
         </div>
     )
