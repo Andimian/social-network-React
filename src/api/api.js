@@ -7,6 +7,7 @@ const instance = axios.create({
 
 });
 
+
 export const usersAPI = {
     getUsers(currentPage = 1, pageSize = 5) {
         return instance.get(`users?page=${currentPage}&count=${pageSize}`)
@@ -21,12 +22,32 @@ export const usersAPI = {
         return instance.delete(`follow/${id}`)
     },
     getProfile(userId) {
-        return instance.get(`profile/${userId}`);
+        console.warn('Obsolete method. Please...');
+        return profileAPI.getProfile(userId);
     }
-}
+};
+
+
+//Работа с профилем
+export const profileAPI = {
+    getProfile(userId) {
+        return instance.get(`profile/${userId}`);
+    },
+
+    //в профиле статуса нет, статус надо запрашивтаь отдельно
+    getStatus(userId) {
+        return instance.get(`profile/status/${userId}`);
+    },
+
+    //при обновлении передаётся объект
+    updateStatus(status) {
+        return instance.put(`profile/status`, {status: status})
+    }
+};
+
 
 export const authAPI = {
     giveMe() {
         return instance.get(`auth/me`);
     }
-}
+};

@@ -1,9 +1,10 @@
-import {usersAPI} from "../api/api";
+import {profileAPI, usersAPI} from "../api/api";
 
 const ADD_POST = 'ADD-POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
 const GET_USER_PROFILE = 'GET_USER_PROFILE';
+const SET_STATUS = 'SET_STATUS';
 
 let initialState =  {
     posts: [
@@ -11,7 +12,8 @@ let initialState =  {
         {id: 2, message: 'js php css html go react.', likesCount: 10}
     ],
     newPostText: '',
-    profile: null
+    profile: null,
+    status: 'тест'
 };
 
 const profileReducer = (state = initialState, action) => {
@@ -38,6 +40,10 @@ const profileReducer = (state = initialState, action) => {
             return {...state, profile: action.profile
             };
         }
+        case SET_STATUS: {
+            return {...state, status: action.status
+            };
+        }
         default:
             return state;
     }
@@ -47,15 +53,28 @@ const profileReducer = (state = initialState, action) => {
 // action creators
 export const addPostActionCreator = () => ({type: ADD_POST});
 export const setUserProfile= (profile) => ({type: SET_USER_PROFILE, profile});
-
-export const updateNewPostTextActionCreator = (text) =>
-    ({type: UPDATE_NEW_POST_TEXT, newText: text});
+export const updateNewPostTextActionCreator = (text) => ({type: UPDATE_NEW_POST_TEXT, newText: text});
+export const setStatus = (status) => ({type: SET_STATUS, status: status});
 
 
 // саночки
 export const getUserProfile = (userId) => (dispatch) => {
     usersAPI.getProfile(userId).then(response => {
         dispatch(setUserProfile(response.data));    //диспатим не AC, а вызов AC
+
+    });
+};
+export const getStatus = (userId) => (dispatch) => {
+    profileAPI.getStatus(userId).then(response => {
+        dispatch(setStatus(response.data));
+    });
+};
+export const updateStatus = (status) => (dispatch) => {
+    profileAPI.updateStatus(status).then(response => {
+        if (true) {
+            dispatch(setStatus(response.data));
+            debugger;
+        }
     });
 };
 
