@@ -22,7 +22,6 @@ export const usersAPI = {
         return instance.delete(`follow/${id}`)
     },
     getProfile(userId) {
-        console.warn('Obsolete method. Please...');
         return profileAPI.getProfile(userId);
     }
 };
@@ -40,8 +39,9 @@ export const profileAPI = {
     },
 
     //при обновлении передаётся объект
-    updateStatus(status) {
-        return instance.put(`profile/status`, {status: status})
+    updateStatus(text) {
+        return instance.put(`profile/status`, {status: text})
+
     }
 };
 
