@@ -6,7 +6,7 @@ import {
     setTotalUserCount,
     toggleFollowingProgress,
     unfollowSuccess
-} from "../../redux/users-reduser";
+} from "../../redux/users-reducer";
 import Users from "./Users";
 import Preloader from "../common/Preloader/Preloader";
 

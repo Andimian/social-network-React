@@ -123,6 +123,4 @@ export const unfollow = (userId) => {
 };
 
 
-
-// сам редьюсер (usersReducer) мы импортируем в нашем redux-store и в контейнерный комп-т надо импортировать крейтеры - соответственно делаем экспорт
 export default usersReducer;

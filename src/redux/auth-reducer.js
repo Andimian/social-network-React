@@ -1,4 +1,5 @@
 import {authAPI} from "../api/api";
+import {stopSubmit} from "redux-form";
 
 const SET_USER_DATA = 'SET_USER_DATA';
 
@@ -33,24 +34,21 @@ export const setAuthUserData = (userId, email, login, isAuth) => ({
 
 /*thunk creators*/
 export const getUserData = () => (dispatch) => {
-    console.log("4-getUserData");
-    authAPI.giveMe().then(response => {
-            if (response.data.resultCode === 0) {
-                let {email, id, login} = response.data.data;
-                console.log("5-giveMe");
-                dispatch(setAuthUserData(id, email, login, true));
-            }
-        });
+    return authAPI.giveMe().then(response => {
+        if (response.data.resultCode === 0) {
+            let {email, id, login} = response.data.data;
+            dispatch(setAuthUserData(id, email, login, true));
+        }
+    });
 };
 export const login = (email, password, rememberMe) => (dispatch) => {
-    console.log("1-login");
     authAPI.login(email, password, rememberMe)
         .then(response => {
-            console.log("2-login-authAPI -ответ");
             if (response.data.resultCode === 0) {
-                console.log("3-response.data.resultCode === 0");
                 dispatch(getUserData());
-                console.log("3-a-после диспатча");
+            } else {
+                let message = response.data.messages.length > 0 ? response.data.messages[0] : 'Какая-то ошибка';
+                dispatch(stopSubmit('login', {_error: message}));
             }
         });
 };

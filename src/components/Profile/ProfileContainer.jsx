@@ -1,18 +1,23 @@
 import Profile from "./Profile";
 import React from "react";
 import {connect} from "react-redux";
-import {getStatus, getUserProfile, updateStatus} from "../../redux/profile-reduser";
-import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {getStatus, getUserProfile, updateStatus} from "../../redux/profile-reducer";
+import {Navigate, useLocation, useNavigate, useParams} from "react-router-dom";
 import {compose} from "redux";
 
 
 class ProfileContainer extends React.Component {
 
     componentDidMount() {
+
         let userId = this.props.router.params.userId ;
         if (!userId){
-            userId=24213;
-            // userId=2;
+            debugger;
+            userId = this.props.authorizedUserId;
+            if (!userId) {
+                debugger;
+                console.log(this.props);
+            }
         }
         this.props.getUserProfile(userId);
         this.props.getStatus(userId);
@@ -20,6 +25,7 @@ class ProfileContainer extends React.Component {
 
     render() {
         return (
+
                 <Profile {...this.props} profile={this.props.profile} status={this.props.status} updateStatus={this.props.updateStatus}/>
         )
     }
@@ -29,8 +35,9 @@ class ProfileContainer extends React.Component {
 /* когда наша функция возвращает объект -ставим круглые скобки */
 let mapStateToProps = (state) => ({
     profile: state.profilePage.profile,
+    status: state.profilePage.status,
     isAuth: state.auth.isAuth, //auth это как ты обозвал ключ для редьюсера в combineReducers
-    status: state.profilePage.status
+    authorizedUserId: state.auth.userId
 });
 
 
