@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import {
-    followSuccess, getUsers,
+    followSuccess, requestUsers,
     setCurrentPage,
     setTotalUserCount,
     toggleFollowingProgress,
@@ -9,16 +9,24 @@ import {
 } from "../../redux/users-reducer";
 import Users from "./Users";
 import Preloader from "../common/Preloader/Preloader";
+import {
+    getCurrentPage, getFollowingInProgress,
+    getIsFetching,
+    getPageSize, getPortionSize,
+    getTotalUserCount, getUsers,
+} from "../../redux/users-selectors";
 
 
 class UsersContainer extends React.Component {
     componentDidMount() {
-        this.props.getUsers(this.props.currentPage, this.props.pageSize);
+        let {currentPage, pageSize} = this.props;
+        this.props.getUsers(currentPage, pageSize);
     }
 
     /*пишем метод как стрелоч функцию, чтобы сохранить контекст вызова*/
     onPageChanged = (pageNumber) => {
-        this.props.getUsers(pageNumber, this.props.pageSize);
+        let {getUsers, pageSize} = this.props;
+        getUsers(pageNumber, pageSize);
     };
 
     render() {
@@ -33,24 +41,24 @@ class UsersContainer extends React.Component {
                 unFollow={this.props.unFollow}
                 follow={this.props.follow}
                 followingInProgress={this.props.followingInProgress}
+                portionSize={this.props.portionSize}
             />
         </>
     }
 }
 
-
 // Необходимые объекты
 let mapStateToProps = (state) => {
     return {
-        users: state.usersPage.users,
-        pageSize: state.usersPage.pageSize,
-        totalUserCount: state.usersPage.totalUserCount,
-        currentPage: state.usersPage.currentPage,
-        isFetching: state.usersPage.isFetching,
-        followingInProgress: state.usersPage.followingInProgress,
+        users: getUsers(state),
+        pageSize: getPageSize(state),
+        totalUserCount: getTotalUserCount(state),
+        currentPage: getCurrentPage(state),
+        isFetching: getIsFetching(state),
+        followingInProgress: getFollowingInProgress(state),
+        portionSize: getPortionSize(state),
     }
 };
-
 
 export default connect(mapStateToProps, {
         follow: followSuccess,/*коннект короче атвоматически создаёт колбек функцию, в которой он вызывает action creator follow, action creator возвращает action и потом этот экшен диспатчится*/
@@ -58,6 +66,7 @@ export default connect(mapStateToProps, {
         setCurrentPage,
         setTotalUserCount,
         toggleFollowingProgress,
-        getUsers
+        // getUsers: requestUsers
+        getUsers: requestUsers
     }
 )(UsersContainer);

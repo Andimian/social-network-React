@@ -1,5 +1,5 @@
-/* Это просто чтобы не обэтоваться с названиями в Action creators */
 import {usersAPI} from "../api/api";
+import {updateOblectInArray} from "../helpers/redusers-helpers";
 
 const FOLLOW = 'FOLLOW';
 const UNFOLLOW = 'UNFOLLOW';
@@ -12,7 +12,7 @@ const TOGGLE_IS_FOLLOWING_PROGRESS = 'TOGGLE_IS_FOLLOWING_PROGRESS';
 /*
 Инициализационный объект для начального отображения (пока не сделан запрос на сервачеллу)
 */
-let initialState =  {
+let initialState = {
     /*пример массива users
     0: {name: 'Ishatr21', id: 24257, uniqueUrlName: null, photos: {…}, status: null, …}
     1: {name: 'Mihals', id: 24256, uniqueUrlName: null, photos: {…}, status: 'string', …}*/
@@ -21,6 +21,7 @@ let initialState =  {
     totalUserCount: 0, //сколько всего юзеров
     currentPage: 1,  //активная страничка
     isFetching: false,
+    portionSize: 15,
     followingInProgress: []
 };
 
@@ -30,38 +31,28 @@ let initialState =  {
 const usersReducer = (state = initialState, action) => {
     switch (action.type) {
         case FOLLOW: {
-            return  {
+            return {
                 ...state,
-                users: state.users.map(u => {
-                    if (u.id === action.userId) {
-                        return {...u, followed: true}
-                    }
-                    return u;
-                })
+                users: updateOblectInArray(state.users, action.userId, "id", {followed: true})
             };
         }
         case UNFOLLOW: {
-            return  {
+            return {
                 ...state,
-                users: state.users.map(u => {
-                    if (u.id === action.userId) {
-                        return {...u, followed: false}
-                    }
-                    return u;
-                })
+                users: updateOblectInArray(state.users, action.userId, "id", {followed: false})
             };
         }
         case SET_USERS: {
-            return  {...state, users: action.users};
+            return {...state, users: action.users};
         }
         case SET_CURRENT_PAGE: {
-            return  {...state, currentPage: action.currentPage};
+            return {...state, currentPage: action.currentPage};
         }
         case SET_TOTAL_USER_COUNT: {
-            return  {...state, totalUserCount: action.count};
+            return {...state, totalUserCount: action.count};
         }
         case TOGGLE_IS_FETCHING: {
-            return  {...state, isFetching: action.isFetching};
+            return {...state, isFetching: action.isFetching};
         }
         case TOGGLE_IS_FOLLOWING_PROGRESS: {
             return {
@@ -83,43 +74,46 @@ export const setUsers = (users) => ({type: SET_USERS, users});
 export const setCurrentPage = (currentPage) => ({type: SET_CURRENT_PAGE, currentPage});
 export const setTotalUserCount = (totalUserCount) => ({type: SET_TOTAL_USER_COUNT, count: totalUserCount});
 export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching: isFetching});
-export const toggleFollowingProgress = (isFetching, userId) => ({type: TOGGLE_IS_FOLLOWING_PROGRESS, isFetching, userId});
+export const toggleFollowingProgress = (isFetching, userId) => ({
+    type: TOGGLE_IS_FOLLOWING_PROGRESS,
+    isFetching,
+    userId
+});
 /*.......................................   Action creators end ............................................*/
 
 /*   Санки   */
-export const getUsers = (currentPage, pageSize) => {
-    return (dispatch) => {
+export const requestUsers = (page, pageSize) => {
+    return async (dispatch) => {
         dispatch(toggleIsFetching(true));  /*когда пошёл запрос - мы запускаем прелоудер*/
-        usersAPI.getUsers(currentPage, pageSize)
-        .then(response => {
-            dispatch(toggleIsFetching(false)); /*когда приходит ответ - отрубаем прелоудер*/
-            dispatch(setUsers(response.items));
-            dispatch(setTotalUserCount(response.totalCount));
-        })
-}};
+        dispatch(setCurrentPage(page));  /*когда пошёл запрос - мы запускаем прелоудер*/
+
+        let response = await usersAPI.getUsers(page, pageSize);
+        dispatch(toggleIsFetching(false)); /*когда приходит ответ - отрубаем прелоудер*/
+        dispatch(setUsers(response.items));
+        dispatch(setTotalUserCount(response.totalCount));
+    }
+};
 export const follow = (userId) => {
-    return (dispatch) => {
-        dispatch.toggleFollowingProgress(true, userId);
-        usersAPI.folow(userId)
-            .then(response => {
-                if (response.data.resultCode === 0) {
-                    dispatch(followSuccess(userId));
-                }
-                dispatch(toggleFollowingProgress(false, userId));
-            });
+    return async (dispatch) => {
+        followUnfollow(dispatch, userId, usersAPI.folow.bind(usersAPI), followSuccess);
     }
 };
 export const unfollow = (userId) => {
-    return (dispatch) => {
-        dispatch.toggleFollowingProgress(true, userId);
-        usersAPI.unFolow(userId)
-            .then(response => {
-                if (response.data.resultCode === 0) {
-                    dispatch(followSuccess(userId));
-                }
-                dispatch(toggleFollowingProgress(false, userId));
-            });
+    return async (dispatch) => {
+        followUnfollow(dispatch, userId, usersAPI.unFolow.bind(usersAPI), unfollowSuccess);
     }
+};
+
+
+// helpers
+const followUnfollow = async (dispatch, userId, apiMethod, actionCreator) => {
+    dispatch.toggleFollowingProgress(true, userId);
+    let response = await apiMethod(userId);
+
+    if (response.data.resultCode === 0) {
+        dispatch(actionCreator(userId));
+    }
+    dispatch(toggleFollowingProgress(false, userId));
 };
 
 

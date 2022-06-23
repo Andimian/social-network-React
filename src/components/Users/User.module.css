@@ -2,9 +2,7 @@
     width: 140px;
     height: auto;
 }
-.selectedPage {
-    font-weight: bold;
-}
+
 .user {
     display: flex;
 }
