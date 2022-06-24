@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/social-network-React/static/css/main.e02612e6.css",
+    "main.js": "/social-network-React/static/js/main.12bf34f4.js",
+    "static/js/787.dfe8b844.chunk.js": "/social-network-React/static/js/787.dfe8b844.chunk.js",
+    "static/media/header.jpg": "/social-network-React/static/media/header.bb392426d54744fb9995.jpg",
+    "static/media/night-city.jpg": "/social-network-React/static/media/night-city.514249d4568d46c1b1f0.jpg",
+    "static/media/logo.png": "/social-network-React/static/media/logo.945be6b12635946cb459.png",
+    "static/media/pre.svg": "/social-network-React/static/media/pre.cdc26fa26aa2bceeb92ec10f46c73909.svg",
+    "index.html": "/social-network-React/index.html",
+    "main.e02612e6.css.map": "/social-network-React/static/css/main.e02612e6.css.map",
+    "main.12bf34f4.js.map": "/social-network-React/static/js/main.12bf34f4.js.map",
+    "787.dfe8b844.chunk.js.map": "/social-network-React/static/js/787.dfe8b844.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e02612e6.css",
+    "static/js/main.12bf34f4.js"
+  ]
+}
