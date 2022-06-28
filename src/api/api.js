@@ -37,11 +37,18 @@ export const profileAPI = {
     getStatus(userId) {
         return instance.get(`profile/status/${userId}`);
     },
-
     //при обновлении передаётся объект
     updateStatus(text) {
         return instance.put(`profile/status`, {status: text})
 
+    },
+    savePhoto (photoFile) {
+        const formdata = new FormData();
+        formdata.append("image", photoFile);
+        return instance.put(`profile/photo`, formdata, {headers: {"Content-Type": "multipart/form-data"}});
+    },
+    saveProfile (profile) {
+        return instance.put(`profile`, profile);
     }
 };
 
@@ -55,5 +62,12 @@ export const authAPI = {
     },
     logout () {
         return instance.delete(`auth/login`);
+    },
+
+};
+
+export const securityAPI = {
+    getCaptchaUrl() {
+        return instance.get(`security/get-captcha-url`);
     }
 };
