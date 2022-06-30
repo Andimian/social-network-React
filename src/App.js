@@ -1,6 +1,6 @@
 import './App.css';
 import Navbar from './components/Navbar/Navbar';
-import {Routes, Route, BrowserRouter} from "react-router-dom";
+import {Routes, Route, BrowserRouter, Navigate} from "react-router-dom";
 import UsersContainer from "./components/Users/UsersContainer";
 import HeaderContainer from "./components/Header/HeaderContainer";
 import React, {Component, Suspense} from "react";
@@ -10,15 +10,24 @@ import {initializeApp} from "./redux/app-reducer";
 import Preloader from "./components/common/Preloader/Preloader";
 import Provider from "react-redux/es/components/Provider";
 import store from "./redux/redux-store";
-// import DialogsContainer from "./components/Dialogs/DialogsContainer";
-// import ProfileContainer from "./components/Profile/ProfileContainer";
+
 const DialogsContainer = React.lazy( () => import("./components/Dialogs/DialogsContainer")) ;
 const ProfileContainer = React.lazy( () => import("./components/Profile/ProfileContainer")) ;
 
 
 class App extends Component {
+
+    catchAllUnhandledErrors =() => {
+        alert('Произошла ошибка! Где-то :) Это общий обработчик.')
+    }
+
     componentDidMount() {
         this.props.initializeApp();
+        window.addEventListener('unhandlerejection', this.catchAllUnhandledErrors);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('unhandlerejection', this.catchAllUnhandledErrors)
     }
 
     render() {
@@ -38,6 +47,8 @@ class App extends Component {
                             <Route path="/messages/*" element={<DialogsContainer/>}/>
                             <Route path="/users/*" element={<UsersContainer/>}/>
                             <Route path="/login/*" element={<LoginPage/>}/>
+                            <Route path="*" element={<div>404</div>}/>
+                            <Route path="/" element={<Navigate to="/profile" from="/" />} />
                         </Routes>
                         </Suspense>
                     </div>
